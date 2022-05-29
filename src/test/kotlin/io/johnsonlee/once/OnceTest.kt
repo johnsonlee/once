@@ -5,6 +5,7 @@ import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import java.util.concurrent.Future
 import java.util.concurrent.TimeUnit
+import java.util.concurrent.atomic.AtomicInteger
 import kotlin.test.assertEquals
 
 class OnceTest {
@@ -40,10 +41,12 @@ class OnceTest {
     }
 
     private fun runInThreadPool(executor: ExecutorService) {
+        val count = AtomicInteger(0)
         val once = Once<Int>()
         val values = (0..10000).map { i ->
             executor.submit<Int> {
                 once {
+                    count.incrementAndGet()
                     i
                 }
             }
@@ -61,6 +64,7 @@ class OnceTest {
         val value = values.map(Future<Int>::get).distinct()
         assertEquals(1, value.size)
         assertEquals(values.first().get(), value.single())
+        assertEquals(1, count.get())
     }
 
 }
