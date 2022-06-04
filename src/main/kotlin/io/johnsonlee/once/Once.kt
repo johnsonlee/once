@@ -6,6 +6,7 @@ private object UNDEFINED
 
 class Once<T : Any> {
 
+    @Volatile
     private var _value: Any? = UNDEFINED
 
     @Suppress("UNCHECKED_CAST")
